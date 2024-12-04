@@ -69,32 +69,32 @@ def socket_obs():
         socketio.emit('data-update2', data3)
     list_scenes = apiObs.get_list_obs_scenes()
     # Obtener la información de los programas con audio
-    audio_sessions_info = obtener_programas_con_audio()
+    # audio_sessions_info = obtener_programas_con_audio()
 
     # Convertir a JSON
-    audio_sessions_json = json.dumps(audio_sessions_info, indent=4)
+    # audio_sessions_json = json.dumps(audio_sessions_info, indent=4)
 
     # Imprimir el JSON
-    print(audio_sessions_json)
-    emit('lista_programas', audio_sessions_json)
+    # print(audio_sessions_json)
+    # emit('lista_programas', audio_sessions_json)
     emit('post-list-scenes', list_scenes)
     
 @socketio.on('set_volume')
 def establecerVolumen(data):
     nombre_proceso = data['nombre']
     volumen = float(data['volumen'])
-    resultado = set_audio_volume(nombre_proceso, volumen)
-    print(resultado)
+    #resultado = set_audio_volume(nombre_proceso, volumen)
+    #print(resultado)
     
     # Convertir el diccionario en formato JSON
-    json_data = json.dumps({
+"""     json_data = json.dumps({
         'nombre_proceso': nombre_proceso,
         'volumen': volumen,
         'resultado': resultado
     })
     
     # Emitir el evento con los datos en formato JSON
-    emit('volumen_actualizado', json_data)
+    emit('volumen_actualizado', json_data) """
     
 @socketio.on('set_scenne')
 def socket_obs(data):
