@@ -13,7 +13,7 @@ import qrcode.image.svg
 
 c = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 try:
-    c.connect(("8.8.8.8", 80))
+    c.connect(("8.8.8.8", 8080))
     ip_priv = c.getsockname()[0]
 finally:
     c.close()

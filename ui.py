@@ -48,7 +48,7 @@ class UI:
                             ),
                             ft.ElevatedButton(
                                 'Abrir GatoDeck',
-                                on_click=lambda e: webbrowser.open(f'http://{self.ip}'),
+                                on_click=lambda e: webbrowser.open(f'http://{self.ip}:8080'),
                                 color='black',
                                 bgcolor='white',
                                 on_hover=lambda e: self.hover(e, 'green'),

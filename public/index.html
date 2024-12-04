@@ -20,8 +20,8 @@
     <responsive-nav-sidebar>
         <!-- Items base para el navbar (móvil) -->
         <div slot="nav-base-items">
-            <user-profile group-id="main" id="kicklogin" minimal></user-profile>
-        </div>
+<!--             <user-profile group-id="main" id="kicklogin" minimal></user-profile>
+ -->        </div>
 
         <!-- Los mismos items base para el sidebar (desktop) -->
         <div slot="sidebar-base-items">
@@ -126,7 +126,10 @@
             <div slot="tab-content" data-tab-content="tab3">
               <section class="section" id="dashboard">
                 <h2>Dashboard</h2>
-
+                <zone-renderer id="zone-renderer">
+                  <div slot="pagination">
+                    <connection-status id="connectionStatus" status="disconnected"></connection-status>
+                </zone-renderer>
                   <div class="containerbox relative">
                     <div id="giftmap">
 

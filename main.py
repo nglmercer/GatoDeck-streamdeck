@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_socketio import SocketIO, send, emit
 from api_back import apiBack
 from api_obs import apiObs
@@ -13,7 +13,11 @@ from ui import run_ui
 
 # configuraciones de Flask
 
-app = Flask(__name__)
+app = Flask(__name__, 
+            static_folder='public',     # Carpeta para archivos estáticos
+            static_url_path='/public',  # URL base para servir archivos estáticos
+            template_folder='templates' # Carpeta de templates
+)
 app.secret_key = os.urandom(24)
 socketio = SocketIO(app)
 
@@ -28,12 +32,21 @@ def api_back():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return send_from_directory('public', 'index.html')
 
+@app.route('/<path:path>')
+def send_static(path):
+    return send_from_directory('public', path)
 @app.route('/qr')
 def qr():
     return render_template('qr.html', data = apiBack.qr_data, data2 = apiBack.qr_svg)
 
+@app.route('/assets/<path:filename>')
+def serve_assets(filename):
+    return send_from_directory('public/assets', filename)
+@app.route('/features/<path:filename>')
+def serve_features(filename):
+    return send_from_directory('public/features', filename)
 @app.errorhandler(404)
 def not_found(error):
     return render_template('error.html'), 404
@@ -97,7 +110,12 @@ def test_button(data):
         apiBack.press(data)
 
 def flask_thread_function():
-    socketio.run(app, host='0.0.0.0', port=80, allow_unsafe_werkzeug=True, debug=False)
+    socketio.run(app, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=True, debug=False)
+
+@socketio.on('connectobs')
+def socket_obs(data):
+    print("socket_obs",data)
+
 
 def main():
     ip = apiBack.get_ip()
@@ -117,4 +135,4 @@ if __name__ == '__main__':
 # if __name__ == '__main__':
 #     ui = threading.Thread(target=run_ui(apiBack.get_ip())) # run_ui() corre flet
 #     ui.start()
-#     socketio.run(app, host='0.0.0.0', port=80, allow_unsafe_werkzeug=False, debug=False)
+#     socketio.run(app, host='0.0.0.0', port=8080, allow_unsafe_werkzeug=False, debug=False)
