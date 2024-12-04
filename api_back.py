@@ -56,13 +56,8 @@ class API_BACK:
         '''
         Ejecuta acciones de atajos de teclado.
         '''
-        if action == 'version':
-            return apiObs.get_obs_version()
-        elif action == 'stream-on' or action == 'stream-of':
-            return apiObs.stream(action) # Llama a la funcion encargada de encender o apagar stream
-        elif action == 'record-on' or action == 'record-off':
-            return apiObs.record(action) # Llama a la funcion encargada de encender o apagar grabacion
-        elif action in self.actions:
+ 
+        if action in self.actions:
             keyboard.press_and_release(self.actions[action])
             return f'Accion realizada: {action}'
         else:

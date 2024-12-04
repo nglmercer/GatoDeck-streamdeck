@@ -2,11 +2,13 @@ import DynamicTable, { EditModal } from '../components/renderfields.js';
 import { databases, IndexedDBManager, DBObserver } from '../database/indexdb.js'
 import { Counter, TypeofData,ComboTracker, replaceVariables, compareObjects,UserInteractionTracker, unflattenObject, flattenObject } from '../utils/utils.js'
 import showAlert from '../components/alerts.js';
-import {mapsvgoutline, mapsvgsolid} from "../assets/svg.js"
 import { getTranslation, translations } from '../translations.js';
 import { sendcommandmc } from './Minecraftconfig.js'
 import { Replacetextoread, addfilterword } from './speechconfig.js'
 import { mapedarrayobs, arrayobs,executebykeyasync } from './obcontroller.js'
+import {mapsvgoutline, mapsvgsolid} from "../assets/svg.js"
+import { mapkeyboardlist } from '../assets/jsondata.js'
+import socketManager from '../server/socketManager.js';
 const ObserverActions = new DBObserver();
 const ActionsManager = new IndexedDBManager(databases.ActionsDB,ObserverActions);
 function replaceNestedValue(obj, path, newValue) {
@@ -209,6 +211,19 @@ const newactionform = document.createElement('dynamic-form');
                 value: 'nombre de la accion',
             })
             .addField({
+              type: 'color',
+              name: 'color',
+              label: 'color',
+              value: '#000000',
+            })
+            .addField({
+              type: 'flexible-modal-selector',
+              name: 'image',
+              label: 'image',
+              mode: 'multi',
+              options: mapsvgoutline,
+            })
+            .addField({
                 type: 'checkbox',
                 name: 'minecraft_check',
                 label: 'minecraft',
@@ -286,6 +301,23 @@ const newactionform = document.createElement('dynamic-form');
               value: 60,
               showWhen: {
                 field: 'overlay_check',
+                value: true
+              }
+            })
+            .addField({
+              type: 'checkbox',
+              name: 'keyboard_check',
+              label: 'keyboard',
+              checked: false,
+            })
+            .addField({
+              type: 'flexible-modal-selector',
+              name: 'keyboard_key',
+              label: 'keyboard',
+              mode: 'multi',
+              options: mapkeyboardlist,
+              showWhen: {
+                field: 'keyboard_check',
                 value: true
               }
             })
@@ -451,7 +483,7 @@ const tableconfigcallback = {
     ActionsManager.deleteData(data.id)
   },
 }
-//const renderer = document.getElementById('zone-renderer');
+const renderer = document.getElementById('zone-renderer');
 async function execobsaction(data) {
   if (data.obs && data.obs?.check) {
     const valueobsaction = arrayobs[data.obs.action];
@@ -519,8 +551,8 @@ const table = new DynamicTable('#table-containerAction',replaceMultipleValues(ac
   // envez de foreach usar un for
    for (let i = 0; i < alldata.length; i++) {
      table.addRow(alldata[i]);
-    //const newbutton = addCustomButton(alldata[i]);
-    //renderer.addCustomElement(alldata[i].id,newbutton);
+    const newbutton = addCustomButton(alldata[i]);
+    renderer.addCustomElement(alldata[i].id,newbutton);
   }
   console.log("alldata render table",alldata);
 })  (); 
@@ -532,7 +564,8 @@ function addCustomButton(data) {
   button.textContent = data.nombre;
   button.addCustomEventListener('click', (event) => {
     console.log('Botón principal clickeado',event,data);
-    if (data && data.obs) {execobsaction(data)}
+    //if (data && data.obs) {execobsaction(data)}
+    if (data && data.keyboard) {sendkeyboard(data)}
   });
   
   console.log(data,"alldata[i]")
@@ -556,6 +589,16 @@ function addCustomButton(data) {
  );
  return button;
 }
+function sendkeyboard(data) {
+  if (data.keyboard && data.keyboard?.check) {
+    const valuekeyboard = data.keyboard.key;
+    console.log("presskey",valuekeyboard);
+    valuekeyboard.forEach((valuekeyboard) => {
+      console.log("presskey",valuekeyboard);
+      socketManager.emitMessage("presskey",valuekeyboard);
+    });
+  }
+}
 ObserverActions.subscribe(async (action, data) => {
   if (action === "save") {
     // table.clearRows();
@@ -566,7 +609,7 @@ ObserverActions.subscribe(async (action, data) => {
     console.log("dataupdate",action,data)
     table.addRow(data);
     const newbutton = addCustomButton(data);
-    //renderer.addCustomElement(data.id,newbutton);
+    renderer.addCustomElement(data.id,newbutton);
   } else if (action === "delete") {
 /*     table.clearRows();
     const dataupdate = await ActionsManager.getAllData();
@@ -574,7 +617,7 @@ ObserverActions.subscribe(async (action, data) => {
       table.addRow(data);
     }); */
     console.log("dataupdate",action,data)
-    //renderer.removeElement(data);
+    renderer.removeElement(data);
   }
   else if (action === "update") {
     // table.clearRows();

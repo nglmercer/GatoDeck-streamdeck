@@ -53,9 +53,10 @@ newhtmlobselement.addEventListener('form-submit', async (e) => {
 newhtmlobselement.addEventListener('form-change', (e) => {
     console.log('Form values changed:', e.detail);
     localStorage.setItem("defaultobsdata",JSON.stringify(e.detail));
-    socketManager.emitMessage("connectobs",e.detail);
 });
-
+socketManager.onMessage('data-obs_connect', (data) => {
+    console.log("data-obs_connect",data);
+});
 const arrayobs = {
     "getScenesList": { function: (...args) => socketemitkey("getScenesList",...args), name: "getScenesList", requiredparams: [] },
     "getVersion": { function: (...args) => socketemitkey("getVersion",...args), name: "getVersion", requiredparams: [] },

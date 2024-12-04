@@ -58,10 +58,9 @@ def connect_obs(data):
     password = data['password']
     apiObs.connect_to_obs(localhost, port, password)
     socketio.emit('data-obs_connect', data)
-    socket_obs()
 
 @socketio.on('socket_data_obs')
-def socket_obs(data):
+def socket_obs():
     data1 = apiObs.get_data1()
     data3 = apiObs.get_data3()
     if data1:
@@ -105,7 +104,7 @@ def socket_obs(data):
 @socketio.on('action')
 def socket_obs(data):
     emit('action-response', apiBack.action_btn(data))
-@socketio.on('TestButton')
+@socketio.on('presskey')
 def test_button(data):
         apiBack.press(data)
 
@@ -115,7 +114,12 @@ def flask_thread_function():
 @socketio.on('connectobs')
 def socket_obs(data):
     print("socket_obs",data)
-
+    localhost = data['ip']
+    port = data['port']
+    password = data['password']
+    apiObs.connect_to_obs(localhost, port, password)
+    socketio.emit('data-obs_connect', data)
+    socket_obs()
 
 def main():
     ip = apiBack.get_ip()

@@ -123,9 +123,6 @@ function createProgramElement(programa) {
 
 socket.on('data-obs_connect', (data) => {
     console.log("data-obs_connect",data);
-    dataconnect = {
-
-    }
 });
 document.getElementById('obsForm').addEventListener('submit', function(event) {
     event.preventDefault();
